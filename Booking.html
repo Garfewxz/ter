@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ฟอร์มจองกิจกรรม</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f9ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        width: 350px;
+    }
+    h2 {
+        text-align: center;
+        color: #007bff;
+    }
+    label {
+        margin-top: 10px;
+        display: block;
+        font-weight: bold;
+    }
+    input, select, button {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+    button {
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+    .error {
+        color: red;
+        font-size: 0.9em;
+        margin-top: 3px;
+    }
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ฟอร์มจองกิจกรรม</h2>
+    <form id="bookingForm">
+        <label>ชื่อ-นามสกุล:</label>
+        <input type="text" id="fullname">
+        <div class="error" id="nameError"></div>
+
+        <label>เบอร์โทรศัพท์:</label>
+        <input type="text" id="phone">
+        <div class="error" id="phoneError"></div>
+
+        <label>ประเภทตั๋ว:</label>
+        <select id="ticketType">
+            <option value="ปกติ">ปกติ</option>
+            <option value="VIP">VIP</option>
+            <option value="Premium">Premium</option>
+        </select>
+
+        <label>จำนวนตั๋ว:</label>
+        <input type="number" id="ticketCount" min="1" max="5">
+        <div class="error" id="countError"></div>
+
+        <button type="submit">จองตั๋ว</button>
+    </form>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="successModal">
+    <div class="modal-content" id="modalMessage"></div>
+</div>
+
+<script>
+const form = document.getElementById('bookingForm');
+const modal = document.getElementById('successModal');
+const modalMsg = document.getElementById('modalMessage');
+
+modal.addEventListener('click', () => modal.style.display = 'none');
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.error').forEach(el => el.textContent = "");
+
+    let fullname = document.getElementById('fullname').value.trim();
+    let phone = document.getElementById('phone').value.trim();
+    let ticketType = document.getElementById('ticketType').value;
+    let ticketCount = parseInt(document.getElementById('ticketCount').value);
+
+    let valid = true;
+
+    if (fullname.split(" ").length < 2) {
+        document.getElementById('nameError').textContent = "กรุณากรอกชื่อและนามสกุลอย่างน้อย 2 คำ";
+        valid = false;
+    }
+    if (!/^[0]\d{9}$/.test(phone)) {
+        document.getElementById('phoneError').textContent = "เบอร์โทรศัพท์ต้องมี 10 หลักและขึ้นต้นด้วย 0";
+        valid = false;
+    }
+    if (isNaN(ticketCount) || ticketCount < 1 || ticketCount > 5) {
+        document.getElementById('countError').textContent = "จำนวนตั๋วต้องอยู่ระหว่าง 1 ถึง 5";
+        valid = false;
+    }
+    if ((ticketType === "VIP" || ticketType === "Premium") && ticketCount > 2) {
+        document.getElementById('countError').textContent = "VIP หรือ Premium จองได้ไม่เกิน 2 ใบ";
+        valid = false;
+    }
+
+    if (!valid) return;
+
+    modalMsg.textContent = `จองตั๋วสำเร็จ จำนวน: ${ticketCount} ประเภท: ${ticketType}`;
+    modal.style.display = 'flex';
+});
+</script>
+
+</body>
+</html>
